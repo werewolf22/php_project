@@ -7,11 +7,8 @@ if(isset($_POST['submit'])){
     $password = trim($_POST['password']);
     
     $fieldNames= ['email', 'password'];
-    foreach($fieldNames as $fieldName ){
-        if (!isset(${$fieldName})||empty(${$fieldName})){
-            $errors[] = $fieldName;
-        }
-    }
+    
+    $errors = validate($fieldNames);
     if (empty($errors)){
         $sql = "select * from users where email = ? limit 0, 1";
         $stmt = $db->prepare($sql);

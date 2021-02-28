@@ -1,5 +1,5 @@
 <?php include_once "../../src/includes/session.php"; ?>
-redirectSignedInUser();
+<?php redirectSignedInUser(); ?>
 <?php include_once "partials/header.php"; ?>
     <div class= "container">
         <div class='col-md-4 offset-4 mt-4'>

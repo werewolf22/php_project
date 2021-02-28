@@ -7,22 +7,7 @@ if(isset($_POST['submit'])){
     $password = trim($_POST['password']);
     $confirmPassword = trim($_POST['confirmPassword']);
     $fieldNames = ['name', 'email', 'password', 'confirmPassword'];
-    foreach ($fieldNames as $fieldName){
-        if (!isset(${$fieldName}) || empty(${$fieldName})){
-            $errors[$fieldName]= "required";
-            // if multiple errors occur in same field errors are saved in array
-            if($fieldName == 'password'){
-                if($password !== $confirmPassword){
-                    if(isset($errors[$fieldName])){
-                        $errors[$fieldName][] = $errors[$fieldName];
-                        $errors[$fieldName][] = 'unmached password';
-                    }else{
-                        $errors[$fieldName] = 'unmached password';
-                    }
-                }
-            }
-        }
-    }
+    $errors = validate($fieldNames);
     if (empty($errors)){
         $password = password_hash($password, PASSWORD_DEFAULT);
         $sql = 'insert into users (name, email, password) values (?, ?, ?)';

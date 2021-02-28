@@ -23,4 +23,3 @@ try {
   if (!$db_select){
   	die("database selection failed:". mysql_error()); 
   }*/
-?>

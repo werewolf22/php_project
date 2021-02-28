@@ -1,0 +1,7 @@
+{
+    "name": "surya/php_project",
+    "description": "practise project",
+    "require": {
+        "phpmailer/phpmailer": "^6.2"
+    }
+}
