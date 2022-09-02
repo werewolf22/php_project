@@ -1,3 +1,11 @@
 src/includes/connection.php
 vendor/
 src/includes/mailConfig.php
+
+
+
+# tridev's gitignore
+/dist/img
+/uploads
+/.htaccess
+/.vscode

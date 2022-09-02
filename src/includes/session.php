@@ -7,8 +7,9 @@
         }
     }
     function redirectSignedInUser(){
+        // var_dump($_SESSION['userId']);die();
         if (isset($_SESSION['userId'])){
-            heared("location: ../../resources/views/dashboard.php");
+            header("location: ../../resources/views/dashboard.php");
             exit();
         }
     }

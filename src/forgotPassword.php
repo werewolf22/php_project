@@ -18,7 +18,7 @@ if (isset($_POST['forgotPasswordSubmit'])){
         
         $sql = 'insert into password_resets (email,token,created_at) value(?,?,?) on duplicate key update token=?,created_at=?';
         $stmt = $db->prepare($sql);
-        $stmt->execute([$email, $token, time(), $token, time()]);
+        $stmt->execute([$email, $token, date('Y-m-d h:i:sa'), $token, date('Y-m-d h:i:sa')]);
         if ($stmt->rowCount()== 1){
 
             $protocol = (isset($_SERVER['https']) && $_SERVER['https'] != "off")? 'https': 'http';
@@ -59,7 +59,10 @@ if (isset($_POST['forgotPasswordResetSubmit'])){
         $password = password_hash($password, PASSWORD_DEFAULT);
         $sql = 'update users set password = ? where email = ?';
         $stmt = $db->prepare($sql);
-        if($stmt->execute([$password, $email])){
+        // if($stmt->execute([$password, $email])){
+        $coreSql = 'update users set password = '.$password.' where email = '.$email;
+        if(mysqli_query($con, $coreSql)){
+            // var_dump($stmt->execute([$password, $email]));die(); // need to check to debug PDO
             $message = 'successful password reset';
             header('location: ../resources/views/signIn.php?success=1');
             $stmt->closeCursor();

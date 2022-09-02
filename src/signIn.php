@@ -1,4 +1,5 @@
 <?php
+// include_once "includes/signOut.php";
 include_once "includes/session.php";
 include_once "includes/connection.php";
 include_once "includes/functions.php";
@@ -15,6 +16,8 @@ if(isset($_POST['submit'])){
         $stmt->execute([$email]);
         if ($stmt->rowCount()==1){
             $foundUser = $stmt->fetch();
+            // var_dump(password_verify($password, $foundUser['password']));
+            // die();
             if(password_verify($password, $foundUser['password'])){
                $_SESSION['userId'] = $foundUser['id'];
                $_SESSION['userName'] = $foundUser['name'];
