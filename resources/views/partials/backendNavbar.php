@@ -10,7 +10,7 @@
                 if (!$_SESSION['userId']) {
                     echo "<a href='index.php' class='nav-link'>Home</a>";
                 } else {
-                    echo "<a href='account.php' class='nav-link'>Home</a>";
+                    echo "<a href='dashboard.php' class='nav-link'>Home</a>";
                 }
                 ?>
            </li>
@@ -38,7 +38,7 @@
                 if (!$_SESSION['userId']) {
                     echo "<a href='login.php' class='nav-link'>Login</a>";
                 } else {
-                    echo "<a href='includes/logout.inc.php' class='nav-link'>Logout</a>";
+                    echo "<a href='../src/signOut.php' class='nav-link'>Logout</a>";
                 }
                 ?>
            </li>

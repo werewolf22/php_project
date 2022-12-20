@@ -4,13 +4,13 @@
     <div class= "container">
         <div class='col-md-4 offset-4 mt-4'>
             <h3>Use below form to reset your password</h3>
-            <form name="forgotPasswordReset" action="../../src/forgotPassword.php" method="post">
+            <form name="forgotPasswordReset" action="src/forgotPassword.php" method="post">
             <div class="mb-3">
                 <label for="password" class="form-label"> Password</label>
                 <input type="password" name="password" class="form-control" id="password" >
             </div>
             <!-- <div class="mb-3"> -->
-                <input type="hidden" name="email" class="form-control" id="email" >
+                <input type="hidden" name="email" class="form-control" id="email" value="<?php echo $_GET['email'] ?>">
             <!-- </div> -->
             <div class="mb-3">
                 <label for="confirmPassword" class="form-label">Retype Password</label>

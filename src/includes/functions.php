@@ -62,18 +62,18 @@ function htmlMail($to,$subject,$body){ // sends an html email
         $mail->Port = SMTP_PORT;
     
         //Set the encryption system to use - ssl (deprecated) or tls
-        $mail->SMTPSecure = SMTP_ENCRYPTION;
+        // $mail->SMTPSecure = SMTP_ENCRYPTION;
     
         //Whether to use SMTP authentication
-        $mail->SMTPAuth = true;
+        $mail->SMTPAuth = false;
     
         //Username to use for SMTP authentication - use full email address for gmail
         //We have configured this variable in the config section
-        $mail->Username = SMTP_USERNAME;
+        // $mail->Username = SMTP_USERNAME;
     
         //Password to use for SMTP authentication
         //We have configured this variable in the config section
-        $mail->Password = SMTP_PASSWORD;
+        // $mail->Password = SMTP_PASSWORD;
         
         // from, recepient and message
         $mail->setFrom('from@example.com', 'Mailer');
@@ -118,4 +118,185 @@ function validate($fieldNames = [], $values = []){
         }
     }
     return $errors;
+}
+
+
+function unsetErrorSession(){
+    unset($_SESSION['error']);
+}
+
+function unsetSuccessSession(){
+    unset($_SESSION['success']);
+}
+// signup start
+
+// function emptyInputSignup($username, $email, $password, $confirm_password)
+// {
+
+//     if (empty($username) || empty($email) || empty($password) || empty($confirm_password)) {
+//         $result = true;
+//     } else {
+//         $result = false;
+//     }
+
+//     return $result;
+// }
+
+// function emptyInputEditUser($username, $email, $old_password, $new_password, $new_confirm_password)
+// {
+
+//     if (empty($username) || empty($email) || empty($old_password) || empty($new_password) || empty($new_confirm_password)) {
+//         $result = true;
+//     } else {
+//         $result = false;
+//     }
+
+//     return $result;
+// }
+
+
+function invalidEmail($email)
+{
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $result = true;
+    } else {
+        $result = false;
+    }
+
+    return $result;
+}
+
+// function passwordNotMatch($password, $confirm_password)
+// {
+
+//     if ($password !== $confirm_password) {
+//         $result = true;
+//     } else {
+//         $result = false;
+//     }
+
+//     return $result;
+// }
+
+// function emailExists($conn, $email)
+// {
+//     $sql = "SELECT * FROM users where usersEmail = ?;";
+
+//     // this is prepare statement and is used to prevent sql injection
+//     $stmt = mysqli_stmt_init($conn);
+
+//     // this is for handling if error that might happen in sql or any error
+//     if (!mysqli_stmt_prepare($stmt, $sql)) {
+//         header("location: ../signup.php?error=stmtfailed");
+//         exit();
+//     }
+
+//     mysqli_stmt_bind_param($stmt, 's', $email);
+//     mysqli_stmt_execute($stmt);
+
+//     //mysqli_stmt_get_result() return data in object form
+//     $resultData = mysqli_stmt_get_result($stmt);
+
+//     // mysqli_fetch_assoc() return data in array form
+//     if ($row = mysqli_fetch_assoc($resultData)) {
+//         return $row;
+//     } else {
+//         $result = false;
+//         return $result;
+//     }
+
+//     mysqli_stmt_close($stmt);
+// }
+
+// signup end
+
+// login start
+
+// function emptyInputLogin($email, $password)
+// {
+
+//     if (empty($email) || empty($password)) {
+//         $result = true;
+//     } else {
+//         $result = false;
+//     }
+
+//     return $result;
+// }
+
+// function loginUser($conn, $email, $password)
+// {
+//     $emailExists = emailExists($conn, $email);
+
+//     if ($emailExists === false) {
+//         header("location: ../login.php?error=wronglogininput");
+//         exit();
+//     }
+
+//     $hashedPassword = $emailExists["usersPassword"];
+//     $checkPassword = password_verify($password, $hashedPassword);
+
+//     if ($checkPassword === false) {
+//         header("location: ../login.php?error=wrongpassword");
+//     } else if ($checkPassword === true) {
+//         session_start();
+//         $_SESSION["userid"] = $emailExists["usersId"];
+//         $_SESSION["usersName"] = $emailExists["usersName"];
+//         header("location: ../account.php");
+//         exit();
+//     }
+// }
+
+// login end
+
+
+//update user start
+
+function updateUser($db, $name, $email, $id, $password = '')
+{
+    // $email = email that cames from user input
+    // $password = new password type by user
+    // $id = user id input
+
+    if ($password ) {
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        $update_sql = "UPDATE users SET  password=? WHERE id=? AND name=? AND email=?";
+        $stmt = $db->prepare($update_sql);
+        return $stmt->execute([$hashedPassword, $id, $name, $email]);
+    } else {
+        $update_sql = "UPDATE users SET name=?, email=? WHERE id=?";
+        $stmt = $db->prepare($update_sql);
+        return $stmt->execute([$name, $email, $id]);
+    }
+
+}
+
+function createContact($conn, $name, $address1, $address2, $email, $primary_phone, $secondary_phone, $type, $company_name = null, $company_address = null, $company_website = null, $company_logo = null)
+{
+    $insertSql = "INSERT INTO contacts(name, address1, address2, email, primary_phone, secondary_phone, type, company_name, company_address, company_website, company_logo) VALUES ('$name', '$address1', '$address2', '$email', '$primary_phone', '$secondary_phone', '$type', '$company_name', '$company_address', '$company_website', '$company_logo');";
+
+    $runInsert = mysqli_query($conn, $insertSql);
+
+    if ($runInsert) {
+        header("location: ../contacts.php?error=none-contact-created");
+        exit();
+    } else {
+        // echo "<p class='text-center'>Failed, Try again!!</p>";
+        echo "Error: " . $runInsert . "<br>" . $conn->error;
+    }
+}
+
+function updateContact($conn, $contactId, $name, $email, $address1, $address2, $primary_phone, $secondary_phone, $type, $company_name = null, $company_address = null, $company_website = null, $company_logo = null)
+{
+    $updateSql = "UPDATE contacts SET name='$name', email='$email', address1='$address1', address2='$address2', primary_phone='$primary_phone', secondary_phone='$secondary_phone', type='$type', company_name='$company_name', company_address='$company_address', company_website='$company_website', company_logo='$company_logo' WHERE id='$contactId';";
+    $runUpdate = mysqli_query($conn, $updateSql);
+
+    if ($runUpdate) {
+        header("location: contacts.php?error=none-contact-updated");
+        exit();
+    } else {
+        echo "Error: " . $updateSql . "<br>" . $conn->error;
+    }
 }

@@ -2,7 +2,7 @@
         <!-- Optional JavaScript; choose one of the two! -->
 
         <!-- Option 1: Bootstrap Bundle with Popper -->
-        <script src=<?php echo $relativePathToPublicFromResources."js/bootstrap.bundle.min.js"; ?>></script>
+        <script src="public/js/bootstrap.bundle.min.js"></script>
 
         <!-- Option 2: Separate Popper and Bootstrap JS -->
         <!--

@@ -21,7 +21,7 @@ if(isset($_POST['submit'])){
             if(password_verify($password, $foundUser['password'])){
                $_SESSION['userId'] = $foundUser['id'];
                $_SESSION['userName'] = $foundUser['name'];
-               header('location: ../resources/views/dashboard.php');
+               header('location: ../backend/dashboard.php');
                $stmt->closeCursor();
                exit();
             }

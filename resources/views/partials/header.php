@@ -1,14 +1,14 @@
 <?php 
     $signedIn = isset($_SESSION['userId']);
-    if(!isset($indexPage)) $indexPage = false;
+    // if(!isset($indexPage)) $indexPage = false;
     
-    if($indexPage){
-        $relativePathToViewsFromPublic = '../resources/views/';
-        $relativePathToPublicFromResources = '';
-    } else {
-        $relativePathToPublicFromResources = '../../public/';
-        $relativePathToViewsFromPublic = '';
-    }
+    // if($indexPage){
+    //     $relativePathToViewsFromPublic = '../resources/views/';
+    //     $relativePathToPublicFromResources = '';
+    // } else {
+    //     $relativePathToPublicFromResources = '../../public/';
+    //     $relativePathToViewsFromPublic = '';
+    // }
 ?>
 
 <!doctype html>
@@ -19,7 +19,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <!-- Bootstrap CSS -->
-        <link href=<?php echo $relativePathToPublicFromResources."css/bootstrap.min.css"; ?> rel="stylesheet">
+        <link href="./public/css/bootstrap.min.css" rel="stylesheet">
 
         <title>php project</title>
     </head>
@@ -43,16 +43,16 @@
                                 Dropdown
                             </span>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="../../src/signOut.php">Sign Out</a></li>
+                                <li><a class="dropdown-item" href="./src/signOut.php">Sign Out</a></li>
                             </ul>
                         </li>';
                     }else{
                         echo '<ul class="nav justify-content-end">
                             <li class="nav-item">
-                            <a class="nav-link " href="'.$relativePathToViewsFromPublic.'signIn.php">Sign In</a>
+                            <a class="nav-link " href="./signIn.php">Sign In</a>
                             </li>
                             <li class="nav-item">
-                            <a class="nav-link " href="'.$relativePathToViewsFromPublic.'signUp.php">Sign Up</a>
+                            <a class="nav-link " href="./signUp.php">Sign Up</a>
                             </li>
                         </ul>';
                     }

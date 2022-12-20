@@ -1,8 +1,7 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="#" class="brand-link">
-        <img src="dist/img/wink.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">PSL</span>
+        <span class="brand-text font-weight-light">PHP project</span>
     </a>
 
     <!-- Sidebar -->
@@ -13,7 +12,7 @@
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
                 <li class="nav-item">
-                    <a href="account.php" class="nav-link">
+                    <a href="dashboard.php" class="nav-link">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>
                             Dashboard
@@ -38,12 +37,7 @@
                                     <p>User Lists</p>
                                 </a>
                             </li>
-                            <li class='nav-item'>
-                                <a href='user_add.php' class='nav-link'>
-                                    <i class='far fa-circle nav-icon'></i>
-                                    <p>Add User</p>
-                                </a>
-                            </li>
+                            
                         </ul>
                     </li>";
                     echo
@@ -62,12 +56,7 @@
                                     <p>Contact Lists</p>
                                 </a>
                             </li>
-                            <li class='nav-item'>
-                                <a href='contact_add.php' class='nav-link'>
-                                    <i class='far fa-circle nav-icon'></i>
-                                    <p>Add Contact</p>
-                                </a>
-                            </li>
+                            
                         </ul>
                     </li>";
                 }
