@@ -1,7 +1,8 @@
 <?php
-require_once 'db.inc.php';
-require_once 'functions.inc.php';
-
+require_once 'includes/connection.php';
+require_once 'includes/session.php';
+require_once 'includes/functions.php';
+// image uploading in database is bad practise
 if (isset($_POST['addContact'])) {
 
     $name = $_POST['name'];
@@ -10,18 +11,22 @@ if (isset($_POST['addContact'])) {
     $email = $_POST['email'];
     $primary_phone = $_POST['primary_phone'];
     $secondary_phone = $_POST['secondary_phone'];
+    $website = $_POST['website'];
 
     $selectedType = $_POST['type'];
 
-    if ($selectedType == 'individual') {
-        createContact($conn, $name, $address1, $address2, $email, $primary_phone, $secondary_phone, $selectedType);
-    } else if ($selectedType == 'company') {
-        $company_name = $_POST['company_name'];
-        $company_address = $_POST['company_address'];
-        $company_website = $_POST['company_website'];
+    if ($selectedType == 'Individual') {
+        $returnValue = createIndividualContact($db, $name, $address1, $address2, $email, $primary_phone, $secondary_phone, $website, $selectedType);
+        // var_dump($returnValue);exit;
+        if($returnValue){
+            $_SESSION['success'] = "Individual Contact Created successfully.";
+            header("location: ../backend/contacts.php");
+            exit;
+        }
+    } else if ($selectedType == 'Company') {
 
         $company_logoContent;
-
+        var_dump($company_logo);exit;
         if (!empty($_FILES["company_logo"]["name"])) {
             // get file info
             $fileName = basename($_FILES["company_logo"]["name"]);
@@ -33,58 +38,41 @@ if (isset($_POST['addContact'])) {
                 $company_logo = $_FILES["company_logo"]["tmp_name"];
                 $company_logoContent = addslashes(file_get_contents($company_logo));
             } else {
-                echo "Sorry, only JPG, JPEG, PNG, & GIF files are allowed to upload.";
+                $_SESSION['error'] = "Sorry, only JPG, JPEG, PNG, & GIF files are allowed to upload.";
+                header("location: ../backend/contacts.php");
+                exit;
             }
         }
 
-        createContact($conn, $name, $address1, $address2, $email, $primary_phone, $secondary_phone, $selectedType, $company_name, $company_address, $company_website, $company_logoContent);
+        $returnValue = createCompanyContact($db, $name, $address1, $address2, $email, $primary_phone, $secondary_phone, $website, $company_logoContent, $selectedType);
+        if($returnValue){
+            $_SESSION['success'] = "Company Contact Created successfully.";
+            header("location: ../backend/contacts.php");
+            exit;
+        }
     }
-} else {
-    header("location: ../add_contact.php");
-    exit();
-}
-
-
-if (isset($_GET['id'])) {
-    $contactId = $_GET['id'];
-
-    $selectSql = "SELECT * FROM contacts where id = '$contactId'";
-    $runSelectSql = mysqli_query($conn, $selectSql);
-
-    $contactData = mysqli_fetch_array($runSelectSql);
-
-    $contactName = $contactData['name'];
-    $contactEmail = $contactData['email'];
-    $contactAddress1 = $contactData['address1'];
-    $contactAddress2 = $contactData['address2'];
-    $contactPrimaryPhone = $contactData['primary_phone'];
-    $contactSecondaryPhone = $contactData['secondary_phone'];
-
-    $contactType = $contactData['type'];
-
-    $contactCompanyName = $contactData['company_name'];
-    $contactCompanyAddress = $contactData['company_address'];
-    $contactCompanyWebsite = $contactData['company_website'];
-    $contactCompanyLogo = $contactData['company_logo'];
 }
 
 
 if (isset($_POST['updateContact'])) {
+    $contactId= $_POST['id'];
     $name = $_POST['name'];
     $email = $_POST['email'];
     $address1 = $_POST['address1'];
     $address2 = $_POST['address2'];
     $primary_phone = $_POST['primary_phone'];
     $secondary_phone = $_POST['secondary_phone'];
+    $website = $_POST['website'];
     $type = $_POST['type'];
 
-    if ($type == "individual") {
-        updateContact($conn, $contactId, $name, $email, $address1, $address2, $primary_phone, $secondary_phone, $type);
-    } else if ($type == "company") {
-
-        $company_name = $_POST['company_name'];
-        $company_address = $_POST['company_address'];
-        $company_website = $_POST['company_website'];
+    if ($type == "Individual") {
+        $returnValue = updateIndividualContact($db, $contactId, $name, $email, $address1, $address2, $primary_phone, $secondary_phone, $website, $type);
+        if ($returnValue) {
+            $_SESSION['success'] = "Individual Contact Updated Successfully";
+            header("location: ../backend/contacts.php");
+            exit;
+        }
+    } else if ($type == "Company") {
 
         // if user update with blank logo, it will erase existing img, it need to fix later
         $company_logoContent;
@@ -101,11 +89,19 @@ if (isset($_POST['updateContact'])) {
                 $company_logo = $_FILES["company_logo"]["tmp_name"];
                 $company_logoContent = addslashes(file_get_contents($company_logo));
             } else {
-                echo "Sorry, only JPG, JPEG, PNG, & GIF files are allowed to upload.";
+                $_SESSION['error'] = "Sorry, only JPG, JPEG, PNG, & GIF files are allowed to upload.";
+                header("location: ../backend/contacts.php");
+                exit;
             }
         }
 
-        updateContact($conn, $contactId, $name, $email, $address1, $address2, $primary_phone, $secondary_phone, $type, $company_name, $company_address, $company_website, $company_logoContent);
+        $returnValue = updateCompanyContact($db, $contactId, $name, $email, $address1, $address2, $primary_phone, $secondary_phone, $website, $company_logoContent, $type);
+        // var_dump($company_logoContent);exit;
+        if ($returnValue) {
+            $_SESSION['success'] = "Company Contact Updated Successfully";
+            header("location: ../backend/contacts.php");
+            exit;
+        }
     }
 }
 
@@ -114,11 +110,16 @@ if (isset($_GET['id'])) {
     $id = $_GET['id'];
     // $deleteContactWithItsRelatedFiles = "DELETE t1, t2 FROM contacts t1 INNER JOIN contact_documents t2 ON t1.id = t2.contact_id WHERE t1.id = $id;";
 
-    $deleteContactWithItsRelatedFiles = "DELETE t1, t2 FROM contacts t1 LEFT JOIN contact_documents t2 ON t1.id = t2.contact_id WHERE t1.id=$id;";
-    $runDelete = mysqli_query($conn, $deleteContactWithItsRelatedFiles);
+    $deleteContactRelatedFiles = "DELETE  FROM contact_documents WHERE contact_id=?;";
+    $stmt = $db->prepare( $deleteContactRelatedFiles);
 
-    if ($runDelete) {
-        header("location: contacts.php?error=none-contact-deleted");
+    $deleteContact = "DELETE  FROM contacts WHERE id=?;";
+    $contactDelSmt = $db->prepare( $deleteContact);
+
+    if ($stmt->execute([$id]) && $contactDelSmt->execute([$id])) {
+        $_SESSION['success'] = "Contact deleted successfully";
+        header("location: ../backend/contacts.php");
+        exit;
     } else {
         echo "<p>Failed, Try again!!</p>";
     }
@@ -190,7 +191,7 @@ if (isset($_POST['addContactDocuments'])) {
 }
 
 
-if (isset($_GET)) {
+if (isset($_GET['document_id'])) {
     $documentId = $_GET['document_id'];
     $contactId = $_GET['id'];
 

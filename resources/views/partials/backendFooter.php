@@ -20,15 +20,12 @@
 <script src="../plugins/jquery-ui/jquery-ui.min.js"></script>
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script>
-    $(document).ready(function() {
-        $('#typeDropdown').change(function() {
-            if ($('#typeDropdown').val() == 'company') {
-                $('#companyDetail').show();
-            } else if ($('#typeDropdown').val() == 'individual') {
-                $('#companyDetail').hide();
-            }
-        });
-    });
+    window.onload = function(){
+        <?php
+        if (isset($windowLoadedJs)) {
+            echo $windowLoadedJs;
+        } ?>
+    }
 </script>
 <script>
   $.widget.bridge('uibutton', $.ui.button)

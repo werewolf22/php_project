@@ -13,92 +13,86 @@ $stmt = $db->prepare($sql);
 $stmt->execute();
 
 ?>
-
-<body class="hold-transition sidebar-mini layout-fixed">
-    <div class="wrapper">
-
-        <div class="content-wrapper">
-            <div class="content-header">
-                <div class="container-fluid">
-                    <div class="row mb-2">
-                        <div class="col-sm-6">
-                            <h1 class="ml-4 text-dark">Users</h1>
-                        </div>
-                    </div>
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="ml-4 text-dark">Users</h1>
                 </div>
             </div>
-
-            <section class="content">
-                <div class="container-fluid">
-                    <div class="text-center" style="color:green">
-                        <?php
-
-                        if (isset($_SESSION['error'])) {
-                            echo $_SESSION['error'];
-                            unsetErrorSession();
-                        }elseif (isset($_SESSION['success'])) {
-                            echo $_SESSION['success'];
-                            unsetSuccessSession();
-                        }
-                        ?>
-                    </div>
-                </div>
-                <div class="container">
-                    <a href="userAdd.php">
-                        <button class="btn btn-primary">Add</button>
-                    </a><br><br>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Email</th>
-                                <th scope="col">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            $i = 1;
-                            if ($stmt->rowCount() > 0) {
-                                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-
-                                    echo "<tr>";
-                                    echo "<td>" . $i . "</td>";
-                                    echo "<td>" . $row['name'] . "</td>";
-                                    echo "<td>" . $row['email'] . "</td>";
-                                    echo "<td><a class=\"btn btn-success btn-sm\" href=\"userEdit.php?id={$row['id']}\">Edit</a>";
-
-                                    if ($_SESSION['userId'] != $row['id']) {
-                                        echo " <a class=\"btn btn-danger btn-sm\" href=\"../src/user.php?id={$row['id']}\" onClick=\"if(!confirm('Are you sure'))return false;\">Delete</a>";
-                                    }
-
-                                    echo "</td></tr>";
-
-                                    // echo "<tr>
-                                    //         <td> " . $row["usersId"]. " </td>
-                                    //         <td> " . $row["usersName"]. "</td>
-                                    //         <td>" . $row["usersEmail"]. "</td>
-                                    //         <td>
-                                    //             <div class='btn-group' role='group'>
-                                    //                 <a href='user_edit.php?id=". $row['usersId'] ."'> <button class='btn btn-success btn-sm'>Edit</button> </a>
-                                    //                 <a href='users.php?id=". $row['usersId'] ."'> <button class='btn btn-danger btn-sm'>Delete</button> </a>
-                                    //             </div>
-                                    //         </td>
-                                    //     </tr>";
-                                    $i++;
-                                }
-                            } else {
-                                
-                                echo "<br>Currently there are no any records!";
-                            }
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
-                </form>
         </div>
-        </section>
     </div>
-    <?php
-    require_once 'partials/backendFooter.php'
-    ?>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="text-center" style="color:<?php echo isset($_SESSION['success'])? "green": "red" ?>">
+                <?php
+
+                if (isset($_SESSION['error'])) {
+                    echo $_SESSION['error'];
+                    unsetErrorSession();
+                }elseif (isset($_SESSION['success'])) {
+                    echo $_SESSION['success'];
+                    unsetSuccessSession();
+                }
+                ?>
+            </div>
+        </div>
+        <div class="container">
+            <a href="userAdd.php">
+                <button class="btn btn-primary">Add</button>
+            </a><br><br>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $i = 1;
+                    if ($stmt->rowCount() > 0) {
+                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+
+                            echo "<tr>";
+                            echo "<td>" . $i . "</td>";
+                            echo "<td>" . $row['name'] . "</td>";
+                            echo "<td>" . $row['email'] . "</td>";
+                            echo "<td><a class=\"btn btn-success btn-sm\" href=\"userEdit.php?id={$row['id']}\">Edit</a>";
+
+                            if ($_SESSION['userId'] != $row['id']) {
+                                echo " <a class=\"btn btn-danger btn-sm\" href=\"../src/user.php?id={$row['id']}\" onClick=\"if(!confirm('Are you sure'))return false;\">Delete</a>";
+                            }
+
+                            echo "</td></tr>";
+
+                            // echo "<tr>
+                            //         <td> " . $row["usersId"]. " </td>
+                            //         <td> " . $row["usersName"]. "</td>
+                            //         <td>" . $row["usersEmail"]. "</td>
+                            //         <td>
+                            //             <div class='btn-group' role='group'>
+                            //                 <a href='user_edit.php?id=". $row['usersId'] ."'> <button class='btn btn-success btn-sm'>Edit</button> </a>
+                            //                 <a href='users.php?id=". $row['usersId'] ."'> <button class='btn btn-danger btn-sm'>Delete</button> </a>
+                            //             </div>
+                            //         </td>
+                            //     </tr>";
+                            $i++;
+                        }
+                    } else {
+                        
+                        echo "<br>Currently there are no any records!";
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+<?php
+require_once 'partials/backendFooter.php'
+?>

@@ -273,30 +273,34 @@ function updateUser($db, $name, $email, $id, $password = '')
 
 }
 
-function createContact($conn, $name, $address1, $address2, $email, $primary_phone, $secondary_phone, $type, $company_name = null, $company_address = null, $company_website = null, $company_logo = null)
+function createIndividualContact($db, $name, $address1, $address2, $email, $primary_phone, $secondary_phone, $website, $type)
 {
-    $insertSql = "INSERT INTO contacts(name, address1, address2, email, primary_phone, secondary_phone, type, company_name, company_address, company_website, company_logo) VALUES ('$name', '$address1', '$address2', '$email', '$primary_phone', '$secondary_phone', '$type', '$company_name', '$company_address', '$company_website', '$company_logo');";
+    $insertSql = "INSERT INTO contacts(name, address1, address2, email, primary_phone, secondary_phone, type, website) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 
-    $runInsert = mysqli_query($conn, $insertSql);
-
-    if ($runInsert) {
-        header("location: ../contacts.php?error=none-contact-created");
-        exit();
-    } else {
-        // echo "<p class='text-center'>Failed, Try again!!</p>";
-        echo "Error: " . $runInsert . "<br>" . $conn->error;
-    }
+    $stmt = $db->prepare( $insertSql);
+    return $stmt->execute([$name, $address1, $address2, $email, $primary_phone, $secondary_phone, $type, $website]);
 }
 
-function updateContact($conn, $contactId, $name, $email, $address1, $address2, $primary_phone, $secondary_phone, $type, $company_name = null, $company_address = null, $company_website = null, $company_logo = null)
+function createCompanyContact($db, $name, $address1, $address2, $email, $primary_phone, $secondary_phone, $website, $company_logo, $type)
 {
-    $updateSql = "UPDATE contacts SET name='$name', email='$email', address1='$address1', address2='$address2', primary_phone='$primary_phone', secondary_phone='$secondary_phone', type='$type', company_name='$company_name', company_address='$company_address', company_website='$company_website', company_logo='$company_logo' WHERE id='$contactId';";
-    $runUpdate = mysqli_query($conn, $updateSql);
+    $insertSql = "INSERT INTO contacts(name, address1, address2, email, primary_phone, secondary_phone, type, website, company_logo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
-    if ($runUpdate) {
-        header("location: contacts.php?error=none-contact-updated");
-        exit();
-    } else {
-        echo "Error: " . $updateSql . "<br>" . $conn->error;
-    }
+    $stmt = $db->prepare( $insertSql);
+    return $stmt->execute([$name, $address1, $address2, $email, $primary_phone, $secondary_phone, $type, $website, $company_logo]);
+}
+
+function updateIndividualContact($db, $contactId, $name, $email, $address1, $address2, $primary_phone, $secondary_phone, $website, $type)
+{
+    $updateSql = "UPDATE contacts SET name=?, email=?, address1=?, address2=?, primary_phone=?, secondary_phone=?, type=?, website=? WHERE id=?;";
+    $stmt = $db->prepare( $updateSql);
+    return $stmt->execute([$name, $email, $address1, $address2, $primary_phone, $secondary_phone, $type, $website, $contactId]);
+}
+
+function updateCompanyContact($db, $contactId, $name, $email, $address1, $address2, $primary_phone, $secondary_phone, $website, $company_logo, $type)
+{
+    $updateSql = "UPDATE contacts SET name=?, email=?, address1=?, address2=?, primary_phone=?, secondary_phone=?, type=?, website=?, company_logo=? WHERE id=?;";
+    $stmt = $db->prepare( $updateSql);
+    // var_dump($company_logo);exit;
+
+    return $stmt->execute([$name, $email, $address1, $address2, $primary_phone, $secondary_phone, $type, $website, $company_logo, $contactId]);
 }

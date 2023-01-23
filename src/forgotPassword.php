@@ -14,7 +14,7 @@ if (isset($_POST['forgotPasswordSubmit'])){
         $foundUser = $stmt->fetch();
         $stmt->closeCursor(); // not needed as per senior sir because once the page load cycle is complete and all the involved script have compiled in server the db connectioin closes automatically in php
         $email= $foundUser['email'];
-        $token = md5($foundUser['email'].substr(str_shuffle("0123456789"),1,1));
+        $token = md5($foundUser['email'] . substr(str_shuffle("0123456789"),1,1));
         
         $sql = 'insert into password_resets (email,token,created_at) value(?,?,?) on duplicate key update token=?,created_at=?';
         $stmt = $db->prepare($sql);
@@ -38,13 +38,12 @@ if (isset($_POST['forgotPasswordSubmit'])){
 // after  clicking on mailed link
 
 if(isset($_GET['token'])){
-    $sql = 'select email from password_resets where token=? limit 0,1';
+    $sql = 'select * from password_resets where token=? limit 0,1';
     $stmt = $db->prepare($sql);
     $result = $stmt->execute([$_GET['token']]);
-    
     if ($stmt->rowCount()==1){
         $passwordResets = $stmt->fetch(PDO::FETCH_ASSOC);
-        header('location: ../forgotPasswordReset.php?email='. $passwordResets['email']);
+        header('location: ../forgotPasswordReset.php?email='. $passwordResets['email'].'&token='.$passwordResets['token']); //should add token too for security reasons
     }else{
         die("Invalid token!!");
     }
