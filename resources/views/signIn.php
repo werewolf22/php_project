@@ -5,7 +5,7 @@
 
     <div class='col-md-4 offset-4 mt-4'>
         <h3>Sign In Your Account</h3>
-        <form name="signIn" action="src/signIn.php" method="post">
+        <form name="signIn" action="../../src/signIn.php" method="post">
         <div class="mb-3">
             <label for="signInEmail" class="form-label">Email address</label>
             <input type="email" name="email" class="form-control" id="signInEmail" aria-describedby="emailHelp">

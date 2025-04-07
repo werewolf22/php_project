@@ -104,8 +104,10 @@ function validate($fieldNames = [], $values = []){
         global ${$fieldName};
         if (!isset(${$fieldName}) || empty(${$fieldName})){
             $errors[$fieldName]= "required";
+        } else{
+            
             // if multiple errors occur in same field errors are saved in array
-            if($fieldName == 'password'){
+            if($fieldName == 'password' && $confirmPassword){
                 if($password !== $confirmPassword){
                     if(isset($errors[$fieldName])){
                         $errors[$fieldName][] = $errors[$fieldName];
@@ -251,9 +253,18 @@ function invalidEmail($email)
 // login end
 
 
+function getCurrentUser(){
+    global $db;
+    $sql = "select * from users where id = ? limit 1";
+    $stmt = $db->prepare($sql);
+    $stmt->execute([$_SESSION['userId']]);
+    return $stmt->fetch();
+}
+
+
 //update user start
 
-function updateUser($db, $name, $email, $id, $password = '')
+function updateUser($db, $name, $email, $id, $registrationNo = null, $phoneNo = null, $password = '')
 {
     // $email = email that cames from user input
     // $password = new password type by user
@@ -266,9 +277,9 @@ function updateUser($db, $name, $email, $id, $password = '')
         $stmt = $db->prepare($update_sql);
         return $stmt->execute([$hashedPassword, $id, $name, $email]);
     } else {
-        $update_sql = "UPDATE users SET name=?, email=? WHERE id=?";
+        $update_sql = "UPDATE users SET name=?, email=?, registration_no=?, phone_no=? WHERE id=?";
         $stmt = $db->prepare($update_sql);
-        return $stmt->execute([$name, $email, $id]);
+        return $stmt->execute([$name, $email, $registrationNo, $phoneNo, $id]);
     }
 
 }

@@ -1,6 +1,7 @@
 src/includes/connection.php
 vendor/
 src/includes/mailConfig.php
+src/includes/emailLog.txt
 
 
 

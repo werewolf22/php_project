@@ -1,6 +1,6 @@
 <?php
 $indexPage = true;
-include "../resources/views/home.php" 
+include "../resources/views/signIn.php" 
 ?>
 
 

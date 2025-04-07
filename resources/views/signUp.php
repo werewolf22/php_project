@@ -3,7 +3,7 @@
 <?php include_once "partials/header.php"; ?>
     <div class='col-md-4 offset-4 mt-4'>
         <h3>Sign Up Your Account</h3>
-        <form name="signIn" action="src/signUp.php" method="post">
+        <form name="signIn" action="../../src/signUp.php" method="post">
         <div class="mb-3">
             <label for="signUpName" class="form-label">Full Name</label>
             <input type="text" name="name" class="form-control" id= "signUpName" >

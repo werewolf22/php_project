@@ -9,7 +9,7 @@
     function redirectSignedInUser(){
         // var_dump($_SESSION['userId']);die();
         if (isset($_SESSION['userId'])){
-            header("location: backend/dashboard.php");
+            header("location: dashboard.php");
             exit();
         }
     }

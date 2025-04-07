@@ -27,8 +27,13 @@ if (isset($_POST['forgotPasswordSubmit'])){
             $resetLink = $url.'/practise/php_project/src/forgotPassword.php?token='.$token;
             $message='<p>A request was made to change your password. If this request was made by you, please click the link below to create a new password.</p>'."\r\n";
             $message.="\t".'<p><a href="'.$resetLink.'">Password Reset Link</a></p>'; 
+            $emailLogFile = 'includes/emailLog.txt';
+            if (!file_exists($emailLogFile)) {
+                file_put_contents($emailLogFile, '');
+            }
+            file_put_contents($emailLogFile, $message . PHP_EOL, FILE_APPEND);
             htmlMail($email, 'Password Reset Link',$message);
-            header('location: ../signIn.php');
+            header('location: ../resources/views/signIn.php');
             $stmt->closeCursor();
             exit();
         }
@@ -43,7 +48,7 @@ if(isset($_GET['token'])){
     $result = $stmt->execute([$_GET['token']]);
     if ($stmt->rowCount()==1){
         $passwordResets = $stmt->fetch(PDO::FETCH_ASSOC);
-        header('location: ../forgotPasswordReset.php?email='. $passwordResets['email'].'&token='.$passwordResets['token']); //should add token too for security reasons
+        header('location: ../resources/views/forgotPasswordReset.php?email='. $passwordResets['email'].'&token='.$passwordResets['token']); //should add token too for security reasons
     }else{
         die("Invalid token!!");
     }
@@ -68,9 +73,9 @@ if (isset($_POST['forgotPasswordResetSubmit'])){
         if(mysqli_query($con, $coreSql)){
             // var_dump($stmt->execute([$password, $email]));die(); // need to check to debug PDO
             $message = 'successful password reset';
-            header('location: ../signIn.php?success=1');
+            header('location: ../resources/views/signIn.php?success=1');
             $stmt->closeCursor();
             exit();
         }
-    }
+    }else var_dump($errors);
 }
