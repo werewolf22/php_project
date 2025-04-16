@@ -2,7 +2,7 @@
     session_start();
     function redirectGuestUser(){
         if (!isset($_SESSION['userId'])){
-            header('location: ../signIn.php');
+            header('location: signIn.php');
             exit();
         }
     }

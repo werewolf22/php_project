@@ -35,7 +35,7 @@ require_once '../../src/includes/functions.php';
 
                 <div class="form-group">
                     <label>Registration No.</label>
-                    <input type="text" class="form-control" name="registration_no" placeholder="Please enter your registration no">
+                    <input type="text" class="form-control" name="registration_no" placeholder="Please enter your organization registration no">
                 </div>
 
                 <div class="form-group">

@@ -9,15 +9,25 @@ require_once "../../src/includes/functions.php";
 
 $currentUser = getCurrentUser();
 if($currentUser['is_admin']) {
-    $sql = 'SELECT * FROM users where is_admin != 1 ORDER BY id desc;';
+    $sql = 'SELECT * FROM users where is_admin != 1 ';
 } else {
-    $sql = 'SELECT * FROM users where id = 1 ORDER BY id desc;';
+    $sql = 'SELECT * FROM users where id = ? ';
 }
+$values = [];
+if(isset($_GET['search']) && $_GET['search']){
+    $sql .= 'and (lower(name) like ? or lower(email) like ? or lower(registration_no) like ? or lower(phone_no) like ?) ';
+    $searchParam ='%'.strtolower(trim($_GET['search'])).'%';
+    $values[] = $searchParam;
+    $values[] = $searchParam;
+    $values[] = $searchParam;
+    $values[] = $searchParam;
+}
+$sql .= 'ORDER BY id desc;';
 $stmt = $db->prepare($sql);
 if($currentUser['is_admin']) {
-    $stmt->execute();
+    $stmt->execute($values);
 } else {
-    $stmt->execute([$_SESSION['userId']]);
+    $stmt->execute(array_merge([$_SESSION['userId']], $values));
 }
 
 ?>
@@ -42,21 +52,22 @@ if($currentUser['is_admin']) {
         <div class="container">
             <?php include_once 'partials/message.php' ?>
             <?php if($currentUser['is_admin']) { ?>
-                <a href="userAdd.php">
-                    <button class="btn btn-primary">Add</button>
-                </a>
-            <?php } ?>
+            <a href="userAdd.php">
+                <button class="btn btn-primary">Add</button>
+            </a>
             <form class="form-inline mt-3">
                 <div class="input-group input-group-sm">
                     <input class="form-control form-control-navbar" name="search" type="search" placeholder="Search"
-                        aria-label="Search">
+                        aria-label="Search" value="<?php echo isset($_GET['search']) && $_GET['search']? $_GET['search']:'' ?>">
                     <div class="input-group-append">
                         <button class="btn btn-navbar" type="submit">
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
                 </div>
-            </form>
+            </form><br>
+            <?php } ?>
+
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -78,8 +89,8 @@ if ($stmt->rowCount() > 0) {
         echo "<td>" . $i . "</td>";
         echo "<td>" . $row['name'] . "</td>";
         echo "<td>" . $row['email'] . "</td>";
-        echo "<td>" . $row['registration_no']?: 'NA' . "</td>";
-        echo "<td>" . $row['phone_no']?: 'NA' . "</td>";
+        echo "<td>" . $row['registration_no'] ?: 'NA' . "</td>";
+        echo "<td>" . $row['phone_no'] ?: 'NA' . "</td>";
         echo "<td><a class=\"btn btn-success btn-sm\" href=\"userEdit.php?id={$row['id']}\">Edit</a>";
 
         if ($_SESSION['userId'] != $row['id']) {
@@ -103,7 +114,7 @@ if ($stmt->rowCount() > 0) {
     }
 } else {
 
-    echo "<br>Currently there are no any records!";
+    echo "Currently there are no records!";
 }
 ?>
                 </tbody>

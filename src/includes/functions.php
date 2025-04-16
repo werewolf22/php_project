@@ -107,7 +107,7 @@ function validate($fieldNames = [], $values = []){
         } else{
             
             // if multiple errors occur in same field errors are saved in array
-            if($fieldName == 'password' && $confirmPassword){
+            if($fieldName == 'password' && isset($confirmPassword)){
                 if($password !== $confirmPassword){
                     if(isset($errors[$fieldName])){
                         $errors[$fieldName][] = $errors[$fieldName];
@@ -258,7 +258,7 @@ function getCurrentUser(){
     $sql = "select * from users where id = ? limit 1";
     $stmt = $db->prepare($sql);
     $stmt->execute([$_SESSION['userId']]);
-    return $stmt->fetch();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
 

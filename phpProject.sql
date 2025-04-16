@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 07, 2025 at 09:12 PM
+-- Generation Time: Apr 16, 2025 at 07:07 PM
 -- Server version: 10.11.11-MariaDB-0ubuntu0.24.04.2
 -- PHP Version: 8.2.28
 
@@ -24,6 +24,97 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `authors`
+--
+
+CREATE TABLE `authors` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `authors`
+--
+
+INSERT INTO `authors` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(1, 'Chudamani Regmi Sir', '2025-04-14 16:03:48', '2025-04-14 16:04:03');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `books`
+--
+
+CREATE TABLE `books` (
+  `id` int(11) NOT NULL,
+  `title` varchar(200) DEFAULT NULL,
+  `author_id` int(11) DEFAULT NULL,
+  `category_id` int(11) DEFAULT NULL,
+  `available_copies` int(11) DEFAULT NULL,
+  `total_copies` int(11) DEFAULT NULL,
+  `isbn_no` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `books`
+--
+
+INSERT INTO `books` (`id`, `title`, `author_id`, `category_id`, `available_copies`, `total_copies`, `isbn_no`, `created_at`, `updated_at`) VALUES
+(1, 'Maths Book', 1, 2, 9, 10, 'alkdf-akjfl1-23223', '2025-04-14 18:34:13', '2025-04-16 18:35:37'),
+(2, 'Biology', 1, 2, 4, 4, 'adfa-adflaj3232', '2025-04-16 17:33:02', '2025-04-16 18:02:50');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `categories`
+--
+
+CREATE TABLE `categories` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `categories`
+--
+
+INSERT INTO `categories` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(2, 'Science', '2025-04-14 15:40:17', '2025-04-14 15:40:17');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `issued_books`
+--
+
+CREATE TABLE `issued_books` (
+  `id` int(11) NOT NULL,
+  `book_id` int(11) DEFAULT NULL,
+  `student_id` int(11) DEFAULT NULL,
+  `issue_date` date DEFAULT NULL,
+  `return_date` date DEFAULT NULL,
+  `extended` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `issued_books`
+--
+
+INSERT INTO `issued_books` (`id`, `book_id`, `student_id`, `issue_date`, `return_date`, `extended`, `created_at`, `updated_at`) VALUES
+(1, 2, 4, '2025-03-28', '2025-04-16', 1, '2025-04-16 16:06:15', '2025-04-16 18:02:50'),
+(2, 1, 5, '2025-04-17', NULL, 0, '2025-04-16 18:35:37', '2025-04-16 18:35:37');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `password_resets`
 --
 
@@ -32,13 +123,6 @@ CREATE TABLE `password_resets` (
   `token` varchar(198) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `password_resets`
---
-
-INSERT INTO `password_resets` (`email`, `token`, `created_at`) VALUES
-('libraryadmin@gmail.com', '8ce0578580489828ad106c9fa0a431e0', '2025-04-06 21:24:02');
 
 -- --------------------------------------------------------
 
@@ -63,11 +147,42 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `is_admin`, `registration_no`, `phone_no`, `created_at`, `updated_at`) VALUES
-(1, 'Library Admin', 'libraryadmin@gmail.com', '$2y$10$9xNaIQtSlT40LxOrUtgj..RPLzwFo91uN2XiycYNM/efsZBdz2w9C', 1, NULL, NULL, '2025-04-08 01:04:12', '2025-04-08 01:04:12');
+(1, 'Library Admin', 'libraryadmin@gmail.com', '$2y$10$9xNaIQtSlT40LxOrUtgj..RPLzwFo91uN2XiycYNM/efsZBdz2w9C', 1, NULL, NULL, '2025-04-08 01:04:12', '2025-04-08 01:04:12'),
+(4, 'student 1', 'student1@gmail.com', '$2y$10$XnZoCemA4VpfspXV3BhmgOsjOAZMKZSno0jUqYgFL35bMFTiA26a.', 0, '', '', '2025-04-14 20:18:55', '2025-04-14 20:18:55'),
+(5, 'student 2', 'student2@gmail.com', '$2y$10$FbygCy1J4YfputgBfBI3VetLhd6zq8Gaf3AJgejqrlBqZ3YXVBJfi', 0, '', '', '2025-04-16 23:38:19', '2025-04-16 23:38:19');
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `authors`
+--
+ALTER TABLE `authors`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `books`
+--
+ALTER TABLE `books`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `author_id` (`author_id`),
+  ADD KEY `category_id` (`category_id`);
+
+--
+-- Indexes for table `categories`
+--
+ALTER TABLE `categories`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `name` (`name`);
+
+--
+-- Indexes for table `issued_books`
+--
+ALTER TABLE `issued_books`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `book_id` (`book_id`),
+  ADD KEY `student_id` (`student_id`);
 
 --
 -- Indexes for table `password_resets`
@@ -86,10 +201,52 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `authors`
+--
+ALTER TABLE `authors`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `books`
+--
+ALTER TABLE `books`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `categories`
+--
+ALTER TABLE `categories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `issued_books`
+--
+ALTER TABLE `issued_books`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(9) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(9) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `books`
+--
+ALTER TABLE `books`
+  ADD CONSTRAINT `books_ibfk_1` FOREIGN KEY (`author_id`) REFERENCES `authors` (`id`),
+  ADD CONSTRAINT `books_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`);
+
+--
+-- Constraints for table `issued_books`
+--
+ALTER TABLE `issued_books`
+  ADD CONSTRAINT `issued_books_ibfk_1` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`),
+  ADD CONSTRAINT `issued_books_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `users` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

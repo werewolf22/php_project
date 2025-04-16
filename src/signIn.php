@@ -24,7 +24,7 @@ if(isset($_POST['submit'])){
                header('location: ../resources/views/dashboard.php');
                $stmt->closeCursor();
                exit();
-            }
+            } else echo 'Invalid Credentials';
         } else var_dump($stmt->rowCount());
     }else var_dump($errors);
 }else var_dump($_POST);
