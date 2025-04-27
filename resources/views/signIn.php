@@ -4,6 +4,11 @@
     
 
     <div class='col-md-4 offset-4 mt-4'>
+        <?php if (isset($_SESSION['error'])) { ?>
+            <div class="alert alert-danger" role="alert">
+            <?php echo $_SESSION['error'];unset($_SESSION['error']); ?>
+            </div>
+        <?php } ?>
         <h3>Sign In Your Account</h3>
         <form name="signIn" action="../../src/signIn.php" method="post">
         <div class="mb-3">

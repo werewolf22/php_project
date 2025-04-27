@@ -20,7 +20,7 @@ if($_GET['id']){
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="ml-4 text-dark">Edit Book Issue</h1>
+                    <h1 class="ml-4 text-dark">Return Book Issued</h1>
                 </div>
             </div>
         </div>
@@ -29,51 +29,37 @@ if($_GET['id']){
     <section class="content">
         <div class="container">
             <?php include_once 'partials/message.php' ?>
-            <form action='../../src/bookTransaction.php' method='POST'>
-                <input type="hidden" name="id" value="<?php echo $_GET['id'] ?>">
+            <form action='../../src/bookTransaction.php?id=<?php echo $_GET['id'] ?>&type=Returned' method='POST'>
                 <div class="form-group">
-                    <label>Student</label>
-                    <select class="form-control" name="student_id" required>
-                        <option value="">Select Student</option>
-                        <?php
-                        $sql = "select * from users where is_admin=0";
-$autstmt = $db->prepare($sql);
-$autstmt->execute();
-$students = $autstmt->fetchAll(PDO::FETCH_ASSOC);
-foreach ($students as $student) {
-    echo '<option value="'.$student['id'].'" '.($student['id']==$result['student_id']?'selected':'').'>'.$student['name'].'('.$student['registration_no'].')'.'</option>';
-}
-?>
-                    </select>
+                    <label>Return Date</label>
+                    <input name="return_date" type="text" class="form-control form-control-navbar datepicker" id="datepicker" data-target="#datepicker" data-toggle="datetimepicker" placeholder="Return Date" />
                 </div>
                 <div class="form-group">
-                    <label>Select Book</label>
-                    <select class="form-control" name="book_id" required>
-                        <option value="">Select Book</option>
-                        <?php
-$sql = "select * from books";
-$catstmt = $db->prepare($sql);
-$catstmt->execute();
-$books = $catstmt->fetchAll(PDO::FETCH_ASSOC);
-foreach ($books as $book) {
-    echo '<option value="'.$book['id'].'"  '.($book['id']==$result['book_id']?'selected':'').'>'.$book['title'].'</option>';
-}
-?>
-                    </select>
+                    <label>Is Damaged</label>
+                    <input type="checkbox" name="is_damaged" onClick="changeFineInput(this);" style="width: calc(2.25rem + 2px);" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Fine Amount</label>
+                    <input name="fine_amount" type="number" id="fine-amount" class="form-control form-control-navbar" min="0" step="0.01" placeholder="Fine Amount" />
                 </div>
                 
                 
-                <div class="form-group">
-                    <label>Issue Date</label>
-                    <input name="issue_date" type="text" class="form-control form-control-navbar datepicker" id="datepicker" data-target="#datepicker" data-toggle="datetimepicker" placeholder="Issue Date" />
-                </div>
+                
 
-                <button class='btn btn-success' type='submit' name='update'>Save</button>
+                <button class='btn btn-success' type='submit'>Save</button>
                 <a href="bookTransactions.php?type=Issued"><button style="float: right;" class='btn btn-primary' type='button'>Back</button></a>
             </form>
         </div>
     </section>
 </div>
+<script>
+    function changeFineInput(checkBox) {
+        let fineInput = document.querySelector('#fine-amount');
+        if(checkBox.checked){
+            fineInput.required = true;
+        }else fineInput.required = false;
+    }
+</script>
 <?php
 $windowLoadedJs = <<<STR
 $('.datepicker').datetimepicker({

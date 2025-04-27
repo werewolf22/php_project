@@ -61,7 +61,7 @@ foreach ($books as $book) {
                 </div>
 
                 <button class='btn btn-success' type='submit' name='add'>Save</button>
-                <a href="bookTransaction.php?type=Issued"><button style="float: right;" class='btn btn-primary'
+                <a href="bookTransactions.php?type=Issued"><button style="float: right;" class='btn btn-primary'
                         type='button'>Back</button></a>
             </form>
         </div>

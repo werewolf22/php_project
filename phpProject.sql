@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 16, 2025 at 07:07 PM
+-- Generation Time: Apr 27, 2025 at 08:01 PM
 -- Server version: 10.11.11-MariaDB-0ubuntu0.24.04.2
 -- PHP Version: 8.2.28
 
@@ -64,8 +64,10 @@ CREATE TABLE `books` (
 --
 
 INSERT INTO `books` (`id`, `title`, `author_id`, `category_id`, `available_copies`, `total_copies`, `isbn_no`, `created_at`, `updated_at`) VALUES
-(1, 'Maths Book', 1, 2, 9, 10, 'alkdf-akjfl1-23223', '2025-04-14 18:34:13', '2025-04-16 18:35:37'),
-(2, 'Biology', 1, 2, 4, 4, 'adfa-adflaj3232', '2025-04-16 17:33:02', '2025-04-16 18:02:50');
+(1, 'Maths Book', 1, 2, 10, 10, 'alkdf-akjfl1-23223', '2025-04-14 18:34:13', '2025-04-27 19:34:53'),
+(2, 'Biology', 1, 2, 4, 4, 'adfa-adflaj3232', '2025-04-16 17:33:02', '2025-04-16 18:02:50'),
+(3, 'Principle of management', 1, 4, 9, 10, 'lakjdfkj-241-adsf', '2025-04-27 12:20:51', '2025-04-27 19:38:32'),
+(4, 'ecnomics', 1, 4, 5, 5, 'a;kjd-ajdklf-adsfkl', '2025-04-27 18:00:05', '2025-04-27 18:00:05');
 
 -- --------------------------------------------------------
 
@@ -85,7 +87,8 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`id`, `name`, `created_at`, `updated_at`) VALUES
-(2, 'Science', '2025-04-14 15:40:17', '2025-04-14 15:40:17');
+(2, 'Science', '2025-04-14 15:40:17', '2025-04-14 15:40:17'),
+(4, 'Management', '2025-04-27 12:19:43', '2025-04-27 12:19:43');
 
 -- --------------------------------------------------------
 
@@ -101,16 +104,45 @@ CREATE TABLE `issued_books` (
   `return_date` date DEFAULT NULL,
   `extended` tinyint(1) DEFAULT 0,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `is_damaged` tinyint(1) DEFAULT 0,
+  `fine_amount` decimal(10,2) DEFAULT 0.00
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `issued_books`
 --
 
-INSERT INTO `issued_books` (`id`, `book_id`, `student_id`, `issue_date`, `return_date`, `extended`, `created_at`, `updated_at`) VALUES
-(1, 2, 4, '2025-03-28', '2025-04-16', 1, '2025-04-16 16:06:15', '2025-04-16 18:02:50'),
-(2, 1, 5, '2025-04-17', NULL, 0, '2025-04-16 18:35:37', '2025-04-16 18:35:37');
+INSERT INTO `issued_books` (`id`, `book_id`, `student_id`, `issue_date`, `return_date`, `extended`, `created_at`, `updated_at`, `is_damaged`, `fine_amount`) VALUES
+(1, 2, 4, '2025-03-28', '2025-04-16', 1, '2025-04-16 16:06:15', '2025-04-16 18:02:50', 0, 0.00),
+(2, 1, 5, '2025-04-13', '2025-04-13', 0, '2025-04-16 18:35:37', '2025-04-27 19:34:53', 1, 1500.12),
+(3, 3, 4, '2025-04-28', NULL, 0, '2025-04-27 19:38:32', '2025-04-27 19:38:32', 0, 0.00);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `notifications`
+--
+
+CREATE TABLE `notifications` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `message` text NOT NULL,
+  `is_read` tinyint(1) DEFAULT 0,
+  `issued_book_id` int(10) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `notifications`
+--
+
+INSERT INTO `notifications` (`id`, `user_id`, `title`, `message`, `is_read`, `issued_book_id`, `created_at`) VALUES
+(1, 1, 'Book Not Returned Alert by student 2', 'student 2 has not returned \'Maths Book\' book with issue code 2', 1, 2, '2025-04-27 17:54:26'),
+(2, 4, 'New Book In Library Alert named \'ecnomics\'', '5 copies of new \'ecnomics\' book is available in library', 1, NULL, '2025-04-27 18:00:05'),
+(3, 5, 'New Book In Library Alert named \'ecnomics\'', '5 copies of new \'ecnomics\' book is available in library', 1, NULL, '2025-04-27 18:00:05'),
+(4, 5, 'Book Return Reminder for issue code 2', 'Your issued book \'Maths Book\' with issue code 2 is due soon.', 1, 2, '2025-04-27 18:20:38');
 
 -- --------------------------------------------------------
 
@@ -185,6 +217,12 @@ ALTER TABLE `issued_books`
   ADD KEY `student_id` (`student_id`);
 
 --
+-- Indexes for table `notifications`
+--
+ALTER TABLE `notifications`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `password_resets`
 --
 ALTER TABLE `password_resets`
@@ -210,19 +248,25 @@ ALTER TABLE `authors`
 -- AUTO_INCREMENT for table `books`
 --
 ALTER TABLE `books`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `issued_books`
 --
 ALTER TABLE `issued_books`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `notifications`
+--
+ALTER TABLE `notifications`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `users`

@@ -71,7 +71,7 @@ $stmt->execute($values);
                                 echo 'Unreturned Books';
                             } elseif($_GET['type'] == 'Hold') {
                                 echo 'On Hold Books';
-                            }elseif($_GET['type'] == 'Returned') {
+                            } elseif($_GET['type'] == 'Returned') {
                                 echo 'Returned Books';
                             }
                         } else {
@@ -94,7 +94,10 @@ $stmt->execute($values);
             </a>
             <?php } ?>
             <form class="form-inline mt-3">
-                <input type="hidden" name="type" value="<?php if(isset($_GET['type']) && $_GET['type']) echo $_GET['type']; ?>">
+                <input type="hidden" name="type"
+                    value="<?php if(isset($_GET['type']) && $_GET['type']) {
+                        echo $_GET['type'];
+                    } ?>">
                 <div class="input-group input-group-sm">
                     <?php
                     if($currentUser['is_admin']) {
@@ -107,7 +110,7 @@ $stmt->execute($values);
                         $autstmt->execute();
                         $students = $autstmt->fetchAll(PDO::FETCH_ASSOC);
                         foreach ($students as $student) {
-                            echo '<option value="'.$student['id'].'" '.((isset( $_GET['student_id']) && $student['id'] == $_GET['student_id']) ? 'selected' : '').'>'.$student['name'].'('.$student['registration_no'].')'.'</option>';
+                            echo '<option value="'.$student['id'].'" '.((isset($_GET['student_id']) && $student['id'] == $_GET['student_id']) ? 'selected' : '').'>'.$student['name'].'('.$student['registration_no'].')'.'</option>';
                         }
                         ?>
                     </select>
@@ -124,13 +127,16 @@ foreach ($books as $book) {
 }
 ?>
                     </select>
-                        <input name="issue_date" type="text" class="form-control form-control-navbar datepicker mx-1" id="datepicker" data-target="#datepicker" data-toggle="datetimepicker" placeholder="Issue Date" />
-                        
-                        <input name="return_date" type="text" class="form-control form-control-navbar datepicker mx-1" id="return-datepicker" data-target="#return-datepicker" data-toggle="datetimepicker"  placeholder="Returned Date"
-                            vlaue="<?php if(isset($_GET['return_date']) && $_GET['return_date']) {
-                                echo trim($_GET['return_date']);
-                            } ?>" />
-                        
+                    <input name="issue_date" type="text" class="form-control form-control-navbar datepicker mx-1"
+                        id="datepicker" data-target="#datepicker" data-toggle="datetimepicker"
+                        placeholder="Issue Date" />
+
+                    <input name="return_date" type="text" class="form-control form-control-navbar datepicker mx-1"
+                        id="return-datepicker" data-target="#return-datepicker" data-toggle="datetimepicker"
+                        placeholder="Returned Date" vlaue="<?php if(isset($_GET['return_date']) && $_GET['return_date']) {
+                            echo trim($_GET['return_date']);
+                        } ?>" />
+
                     <div class="input-group-append">
                         <button class="btn btn-navbar" type="submit">
                             <i class="fas fa-search"></i>
@@ -142,11 +148,17 @@ foreach ($books as $book) {
                 <thead>
                     <tr>
                         <th scope="col">#</th>
+                        <th scope="col">Issue Code</th>
                         <th scope="col">Book</th>
                         <th scope="col">Student</th>
                         <th scope="col">Issue Date</th>
                         <th scope="col">Expected Return Date</th>
                         <th scope="col">Returned Date</th>
+                        <?php
+                        if($_GET['type'] == 'Returned') { ?>
+                        <th scope="col">Is Damaged</th>
+                        <th scope="col">Fine Amount</th>
+                        <?php } ?>
 
                         <th scope="col">Action</th>
                     </tr>
@@ -159,16 +171,21 @@ if ($stmt->rowCount() > 0) {
 
         echo "<tr>";
         echo "<td>" . $i . "</td>";
+        echo "<td>" . $row['id'] . "</td>";
         echo "<td>" . $row['book_title'] . "</td>";
         echo "<td>" . $row['student_name']."({$row['registration_no']})" . "</td>";
         echo "<td>" . date('F j, Y', strtotime($row['issue_date'])) . "</td>";
-        echo "<td>" . date('F j, Y', strtotime($row['issue_date'].($row['extended']?'+18 days':'+15 days'))) . "</td>";
-        echo "<td>" . ($row['return_date']?date('F j, Y', strtotime($row['return_date'])):'NA') . "</td>";
+        echo "<td>" . date('F j, Y', strtotime($row['issue_date'].($row['extended'] ? '+18 days' : '+15 days'))) . "</td>";
+        echo "<td>" . ($row['return_date'] ? date('F j, Y', strtotime($row['return_date'])) : 'NA') . "</td>";
+        if($_GET['type']=='Returned'){
+            echo '<td>'.($row['is_damaged']?'Yes': 'No').'</td>';
+            echo '<td>'.$row['fine_amount'].'</td>';
+        }
         echo '<td>';
         if($currentUser['is_admin']) {
             if(isset($_GET['type']) && $_GET['type']) {
                 if($_GET['type'] != 'Returned') {
-                    echo " <a class=\"btn btn-primary btn-sm\" href=\"../../src/bookTransaction.php?id={$row['id']}&type=Returned\"  onClick=\"if(!confirm('Are you sure'))return false;\">Returned</a>";
+                    echo " <a class=\"btn btn-primary btn-sm\" href=\"bookReturnEdit.php?id={$row['id']}\"  onClick=\"if(!confirm('Are you sure'))return false;\">Returned</a>";
                     echo " <a class=\"btn btn-success btn-sm\" href=\"bookTransactionEdit.php?id={$row['id']}\">Edit</a>";
                     echo " <a class=\"btn btn-danger btn-sm\" href=\"../../src/bookTransaction.php?id={$row['id']}&type=Delete\" onClick=\"if(!confirm('Are you sure'))return false;\">Delete</a>";
                 }
@@ -225,13 +242,13 @@ if ($stmt->rowCount() > 0) {
             });
 STR;
 
-if(isset($_GET['issue_date']) && $_GET['issue_date']){
+if(isset($_GET['issue_date']) && $_GET['issue_date']) {
     $windowLoadedJs .= <<<STR
     document.querySelector('#datepicker').value = '{$_GET['issue_date']}';
 STR;
 }
 
-if(isset($_GET['return_date']) && $_GET['return_date']){
+if(isset($_GET['return_date']) && $_GET['return_date']) {
     $windowLoadedJs .= <<<STR
     document.querySelector('#return-datepicker').value = '{$_GET['return_date']}';
 STR;

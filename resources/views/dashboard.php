@@ -66,7 +66,7 @@ $returned = $stmt->fetch(PDO::FETCH_ASSOC);
 
     <section class="content">
         <div class="container-fluid">
-            <h3>Welcome to Lary Management System,
+            <h3>Welcome to Library Management System,
                 <?php echo $_SESSION['userName'] ?>
             </h3>
             <div class="row">
@@ -131,10 +131,83 @@ $returned = $stmt->fetch(PDO::FETCH_ASSOC);
                 </div>
                 <!-- ./col -->
             </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <canvas id="myChart" width="400" height="130"></canvas>
+                </div>
+            </div>
 
         </div>
     </section>
 </div>
-<?php
+<?php 
+$sql = 'SELECT * FROM categories ORDER BY id desc;';
+
+$stmt = $db->prepare($sql);
+$stmt->execute();
+$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$barData = [];
+$barcolors = [
+    'rgba(255, 99, 132, 0.2)',
+    'rgba(54, 162, 235, 0.2)',
+    'rgba(255, 206, 86, 0.2)',
+    'rgba(75, 192, 192, 0.2)',
+    'rgba(153, 102, 255, 0.2)',
+    'rgba(255, 159, 64, 0.2)'
+];
+$barborders = [
+    'rgba(255, 99, 132, 1)',
+    'rgba(54, 162, 235, 1)',
+    'rgba(255, 206, 86, 1)',
+    'rgba(75, 192, 192, 1)',
+    'rgba(153, 102, 255, 1)',
+    'rgba(255, 159, 64, 1)'
+];
+$totalBooks = 0;
+foreach ($rows as $row ) {
+    $sql = 'SELECT count(id) as count FROM books where category_id=?;';
+    $bookcountstmt = $db->prepare($sql);
+    $bookcountstmt->execute([$row['id']]);
+    $bookcount = $bookcountstmt->fetch(PDO::FETCH_ASSOC);
+    $barData['label'][] = $row['name'];
+    $barData['count'][] = $bookcount['count'];
+    $randkey = array_rand($barcolors);
+    $barData['bar_color'][] = $barcolors[$randkey];
+    $barData['bar_border'][] = $barborders[$randkey];
+    $totalBooks += $bookcount['count'];
+}
+
+$barData['label'] = json_encode($barData['label']);
+$barData['count'] = json_encode($barData['count']);
+$barData['bar_color'] = json_encode($barData['bar_color']);
+$barData['bar_border'] = json_encode($barData['bar_border']);
+
+
+$windowLoadedJs = <<<STR
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: {$barData['label']},
+        datasets: [{
+            label: 'Books per Category ( total $totalBooks books )',
+            data: {$barData['count']},
+            backgroundColor: {$barData['bar_color']},
+            borderColor: {$barData['bar_border']},
+            borderWidth: 1,
+            barThickness: 90
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+STR;
 require_once 'partials/backendFooter.php'
 ?>

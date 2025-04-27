@@ -17,6 +17,16 @@ if (isset($_POST['add'])) {
         $sql = 'insert into books (title, isbn_no, author_id, category_id,  available_copies, total_copies) values (?, ?, ?, ?, ?, ?)';
         $stmt = $db->prepare($sql);
         if($stmt->execute([$title, $ISBN_No, $authorId, $categoryId, $totalCopies, $totalCopies])) {
+            $sql = 'SELECT * FROM users where is_admin != 1 ';
+            $stmt = $db->prepare($sql);
+            $stmt->execute();
+            $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($users as $user ) {
+                $sql = 'insert into notifications (user_id, title, message) values (?, ?, ?)';
+                $stmt = $db->prepare($sql);
+                $stmt->execute([$user['id'], "New Book In Library Alert named '$title'", "$totalCopies copies of new '$title' book is available in library"]);
+            }
+
             $_SESSION['success'] = 'new book created';
             // var_dump($_SESSION['success']);exit;
             header('location: ../resources/views/books.php');

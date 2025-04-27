@@ -315,3 +315,20 @@ function updateCompanyContact($db, $contactId, $name, $email, $address1, $addres
 
     return $stmt->execute([$name, $email, $address1, $address2, $primary_phone, $secondary_phone, $type, $website, $company_logo, $contactId]);
 }
+
+function timeAgo($time) {
+    $time = strtotime($time); // convert to timestamp if it's date string
+    $diff = strtotime(date('Y-m-d H:i:s')) - $time;
+
+    if ($diff < 60) {
+        return $diff . ' sec ago';
+    } elseif ($diff < 3600) {
+        return floor($diff / 60) . ' min ago';
+    } elseif ($diff < 86400) {
+        return floor($diff / 3600) . ' hr ago';
+    } elseif ($diff < 604800) {
+        return floor($diff / 86400) . ' day ago';
+    } else {
+        return date('d M Y', $time); // If more than a week, show date
+    }
+}

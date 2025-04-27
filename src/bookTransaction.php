@@ -145,36 +145,48 @@ if (isset($_GET['type']) && $_GET['type']=='Delete' && isset($_GET['id'])) {
 
 if (isset($_GET['type']) && $_GET['type']=='Returned' && isset($_GET['id'])) {
     $id = $_GET['id'];
+    if(isset($_POST['is_damaged'])) $isDamaged = 1;
+    else $isDamaged = 0;
+    $fineAmount = trim($_POST['fine_amount']);
+    $returnDate = trim($_POST['return_date']);
     // $deleteContactWithItsRelatedFiles = "DELETE t1, t2 FROM contacts t1 INNER JOIN contact_documents t2 ON t1.id = t2.contact_id WHERE t1.id = $id;";
-    $sql = 'select * from issued_books where id=?';
-    $stmt = $db->prepare($sql);
-    $stmt->execute([$id]);
-    $issuedbook = $stmt->fetch(PDO::FETCH_ASSOC);
+    $fieldNames = ['returnDate'];
+    $errors = validate($fieldNames);
+    if (empty($errors)) {
+        $sql = 'select * from issued_books where id=?';
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$id]);
+        $issuedbook = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $sql = 'select * from books where id=?';
-    $stmt = $db->prepare($sql);
-    $stmt->execute([$issuedbook['book_id']]);
-    $prevBook = $stmt->fetch(PDO::FETCH_ASSOC);
+        $sql = 'select * from books where id=?';
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$issuedbook['book_id']]);
+        $prevBook = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $prevAvialableCopies = $prevBook['available_copies']+1;
+        $prevAvialableCopies = $prevBook['available_copies']+1;
 
-    $sql = "UPDATE books SET available_copies=? WHERE id=?";
-    $stmt = $db->prepare($sql);
-    if($stmt->execute([$prevAvialableCopies, $issuedbook['book_id']])) {
-        $sql = "UPDATE issued_books SET return_date=? WHERE id=?";
-        $stmt = $db->prepare( $sql);
+        $sql = "UPDATE books SET available_copies=? WHERE id=?";
+        $stmt = $db->prepare($sql);
+        if($stmt->execute([$prevAvialableCopies, $issuedbook['book_id']])) {
+            $sql = "UPDATE issued_books SET return_date=?, is_damaged=?, fine_amount=? WHERE id=?";
+            $stmt = $db->prepare( $sql);
 
-        if ($stmt->execute([date('Y-m-d'), $id])) {
-            $_SESSION['success'] = "book returned successfully";
-            header("location: ". $_SERVER['HTTP_REFERER']);
-            exit;
-        } else {
+            if ($stmt->execute([$returnDate, $isDamaged, $fineAmount, $id])) {
+                $_SESSION['success'] = "book returned successfully";
+                header('location: ../resources/views/bookTransactions.php?type=Returned');
+                exit();
+            } else {
 
-            $errors =  ["Failed, Try again!!"];
-            $_SESSION['error'] = $errors;
-            header('location: '. $_SERVER['HTTP_REFERER']);
-            exit();
+                $errors =  ["Failed, Try again!!"];
+                $_SESSION['error'] = $errors;
+                header('location: '. $_SERVER['HTTP_REFERER']);
+                exit();
+            }
         }
+    }else{
+        $_SESSION['error'] = $errors;
+        header('location: '. $_SERVER['HTTP_REFERER']);
+        exit();
     }
 }
 
